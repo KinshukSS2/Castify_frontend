@@ -1,0 +1,185 @@
+/* Full-screen background */
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+/* Floating orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.6;
+  animation: float 10s infinite ease-in-out;
+}
+
+.orb1 {
+  width: 400px;
+  height: 400px;
+  background: #ff0080;
+  top: -100px;
+  left: -100px;
+}
+
+.orb2 {
+  width: 300px;
+  height: 300px;
+  background: #2afadf;
+  bottom: -80px;
+  right: -80px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(40px); }
+}
+
+/* Glass card */
+.login-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 40px 35px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  position: relative;
+  z-index: 10;
+  animation: fadeIn 0.7s ease;
+}
+
+/* Title */
+.login-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.login-subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+  opacity: 0.7;
+}
+
+/* Floating label inputs */
+.input-group {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px #7928ca;
+}
+
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label,
+.input-group input:valid + label {
+  top: -8px;
+  left: 10px;
+  font-size: 12px;
+  color: #ff0080;
+  background: rgba(0,0,0,0.5);
+  padding: 0 4px;
+  border-radius: 5px;
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(90deg, #ff0080, #7928ca, #2afadf);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loader spinner */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid white;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Toasts */
+.toast {
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  animation: slideUp 0.4s ease;
+}
+
+.toast.success {
+  background: rgba(16, 185, 129, 0.25);
+  color: #10b981;
+}
+
+.toast.error {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

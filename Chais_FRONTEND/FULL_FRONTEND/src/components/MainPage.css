@@ -1,0 +1,75 @@
+/* Full screen background */
+.main-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #0f172a, #000); /* navy to black */
+  color: #fff;
+  position: relative;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Subtle dark overlay for cinematic depth */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Main content */
+.content {
+  position: relative;
+  text-align: center;
+  padding: 40px;
+}
+
+/* Title */
+.title {
+  font-size: 3.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: 200;
+  color: #aaa;
+  margin-bottom: 60px;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: 400;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn.light {
+  background: #fff;
+  color: #000;
+}
+.btn.light:hover {
+  background: #e5e5e5;
+}
+
+.btn.dark {
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+}
+.btn.dark:hover {
+  background: #222;
+}

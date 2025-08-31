@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export default function Login() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,70 +20,85 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage(null);
 
     try {
+      const payload = {};
+      if (formData.email.trim()) payload.email = formData.email;
+      if (formData.username.trim()) payload.username = formData.username;
+      payload.password = formData.password;
+
       const res = await axios.post(
         "http://localhost:8000/api/v1/users/login",
-        formData,
-        { withCredentials: true } // ✅ allows cookies (access + refresh tokens)
+        payload,
+        { withCredentials: true }
       );
 
-      // Save user details in localStorage
       localStorage.setItem("user", JSON.stringify(res.data.data.user));
 
-      alert("✅ Login successful!");
-      navigate("/home"); // redirect to Home
+      setMessage({ type: "success", text: "✅ Login successful!" });
+      setTimeout(() => navigate("/home"), 1200);
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert("❌ Login failed: " + (err.response?.data?.message || "Server error"));
+      setMessage({
+        type: "error",
+        text: "❌ " + (err.response?.data?.message || "Login failed"),
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+    <div className="login-page">
+      <div className="orb orb1"></div>
+      <div className="orb orb2"></div>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username (or leave blank if using email)"
-          value={formData.username}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-        />
+      <form onSubmit={handleSubmit} className="login-card">
+        <h2 className="login-title">Welcome Back 👋</h2>
+        <p className="login-subtitle">Log in to continue</p>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email (or leave blank if using username)"
-          value={formData.email}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-        />
+        <div className="input-group">
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required={!formData.email}
+          />
+          <label>Username</label>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-          required
-        />
+        <div className="input-group">
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required={!formData.username}
+          />
+          <label>Email</label>
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? "Logging in..." : "Login"}
+        <div className="input-group">
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <label>Password</label>
+        </div>
+
+        <button type="submit" className="login-btn" disabled={loading}>
+          {loading ? <span className="loader"></span> : "Login"}
         </button>
+
+        {message && (
+          <div className={`toast ${message.type}`}>
+            {message.text}
+          </div>
+        )}
       </form>
     </div>
   );

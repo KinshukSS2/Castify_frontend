@@ -1,0 +1,100 @@
+/* Full dark wrapper */
+.profile-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0a0a0a;
+  font-family: "Segoe UI", sans-serif;
+  color: white;
+  padding: 40px;
+}
+
+/* Profile Card */
+.profile-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 24px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+
+/* Avatar */
+.avatar-ring {
+  display: inline-block;
+  padding: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7928ca, #2563eb, #10b981);
+  margin-bottom: 24px;
+}
+.avatar-img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  display: block;
+  border: 4px solid #0a0a0a; /* blends with bg */
+}
+
+/* User text */
+.user-name {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.user-handle {
+  color: #777;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.info-box {
+  background: #1a1a1a;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  text-align: left;
+}
+.info-box span {
+  font-size: 0.85rem;
+  color: #888;
+}
+.info-box p {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 6px;
+  color: #eee;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+.chip-btn {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.25s ease;
+}
+.chip-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+.chip-btn.purple { background: linear-gradient(135deg, #7928ca, #2d0a52); }
+.chip-btn.blue   { background: linear-gradient(135deg, #2563eb, #0f172a); }
+.chip-btn.green  { background: linear-gradient(135deg, #10b981, #064e3b); }

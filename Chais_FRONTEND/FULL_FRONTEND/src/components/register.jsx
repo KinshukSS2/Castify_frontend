@@ -1,9 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ for redirect
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom"; // ✅ added Link
 import axios from "axios";
+import "./Register.css";
 
 export default function Register() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -38,15 +46,11 @@ export default function Register() {
       const res = await axios.post(
         "http://localhost:8000/api/v1/users/register",
         data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      // ✅ Save user info in localStorage
       localStorage.setItem("user", JSON.stringify(res.data.data));
 
-      // 🚀 Redirect to home
       navigate("/home");
     } catch (err) {
       console.error(err.response?.data || err.message);
@@ -60,80 +64,97 @@ export default function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
+    <div className="register-container">
+      <div className="form-box">
+        <h2 className="title">Create Account</h2>
+        <p className="subtitle">Join us and get started</p>
 
-        <input
-          type="text"
-          name="fullname"
-          placeholder="Full Name"
-          value={formData.fullname}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-          required
-        />
+        <form onSubmit={handleSubmit} className="form">
+          <input
+            type="text"
+            name="fullname"
+            placeholder="Full Name"
+            value={formData.fullname}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-          required
-        />
+          {/* Avatar */}
+          <label className="file-label">Avatar (required)</label>
+          <label className={`file-upload ${avatar ? "uploaded" : ""}`}>
+            {loading ? (
+              <span className="loader"></span>
+            ) : avatar ? (
+              <span className="check">✔ Uploaded</span>
+            ) : (
+              <span className="icon">⬆ Upload</span>
+            )}
+            <input
+              type="file"
+              name="avatar"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              required
+            />
+          </label>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-          required
-        />
+          {/* Cover */}
+          <label className="file-label">Cover Image (optional)</label>
+          <label className={`file-upload ${coverImage ? "uploaded" : ""}`}>
+            {loading ? (
+              <span className="loader"></span>
+            ) : coverImage ? (
+              <span className="check">✔ Uploaded</span>
+            ) : (
+              <span className="icon">⬆ Upload</span>
+            )}
+            <input
+              type="file"
+              name="coverimage"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+          </label>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="border p-2 w-full mb-3 rounded"
-          required
-        />
+          <button type="submit" disabled={loading} className="btn">
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
 
-        <label className="block mb-2 text-sm">Avatar (required)</label>
-        <input
-          type="file"
-          name="avatar"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="mb-3"
-          required
-        />
-
-        <label className="block mb-2 text-sm">Cover Image (optional)</label>
-        <input
-          type="file"
-          name="coverimage"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="mb-3"
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
+        {/* ✅ Login link */}
+        <p className="redirect-text">
+          Already have an account?{" "}
+          <Link to="/login" className="redirect-link">
+            Log in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
