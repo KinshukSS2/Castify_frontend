@@ -8,8 +8,17 @@ export default function Register() {
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
-      navigate("/home");
+    const token = localStorage.getItem("token");
+    // Only redirect if both user data and valid token exist
+    if (user && token) {
+      try {
+        JSON.parse(user); // Validate it's proper JSON
+        navigate("/home");
+      } catch (error) {
+        // If user data is corrupted, clear it
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
   }, [navigate]);
 
@@ -64,96 +73,138 @@ export default function Register() {
   };
 
   return (
-    <div className="register-container">
-      <div className="form-box">
-        <h2 className="title">Create Account</h2>
-        <p className="subtitle">Join us and get started</p>
+    <div className="register-page">
+      {/* Unique floating geometric shapes */}
+      <div className="register-shape shape1"></div>
+      <div className="register-shape shape2"></div>
+      <div className="register-shape shape3"></div>
 
-        <form onSubmit={handleSubmit} className="form">
-          <input
-            type="text"
-            name="fullname"
-            placeholder="Full Name"
-            value={formData.fullname}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+      <div className="register-container">
+        <div className="register-card">
+          <h2 className="register-title">Register</h2>
+          <p className="register-subtitle">
+            Create your account and join our community
+          </p>
 
-          {/* Avatar */}
-          <label className="file-label">Avatar (required)</label>
-          <label className={`file-upload ${avatar ? "uploaded" : ""}`}>
-            {loading ? (
-              <span className="loader"></span>
-            ) : avatar ? (
-              <span className="check">✔ Uploaded</span>
-            ) : (
-              <span className="icon">⬆ Upload</span>
-            )}
-            <input
-              type="file"
-              name="avatar"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              required
-            />
-          </label>
+          <form onSubmit={handleSubmit}>
+            {/* Personal Information Section */}
+            <div className="form-section">
+              <h3 className="section-title">Personal Information</h3>
+              <div className="input-grid">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    name="fullname"
+                    placeholder=" "
+                    value={formData.fullname}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label>Full Name</label>
+                </div>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder=" "
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label>Username</label>
+                </div>
+              </div>
+            </div>
 
-          {/* Cover */}
-          <label className="file-label">Cover Image (optional)</label>
-          <label className={`file-upload ${coverImage ? "uploaded" : ""}`}>
-            {loading ? (
-              <span className="loader"></span>
-            ) : coverImage ? (
-              <span className="check">✔ Uploaded</span>
-            ) : (
-              <span className="icon">⬆ Upload</span>
-            )}
-            <input
-              type="file"
-              name="coverimage"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-          </label>
+            {/* Account Details Section */}
+            <div className="form-section">
+              <h3 className="section-title">Account Details</h3>
+              <div className="input-grid single">
+                <div className="input-group">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder=" "
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label>Email Address</label>
+                </div>
+                <div className="input-group">
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder=" "
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label>Password</label>
+                </div>
+              </div>
+            </div>
 
-          <button type="submit" disabled={loading} className="btn">
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
+            {/* Upload Section */}
+            <div className="form-section">
+              <h3 className="section-title">Profile Assets</h3>
+              <div className="upload-grid">
+                <label className={`file-upload ${avatar ? "uploaded" : ""}`}>
+                  <div className="upload-icon">👤</div>
+                  <div className="upload-text">
+                    {avatar ? "Avatar Uploaded" : "Upload Avatar"}
+                  </div>
+                  <div className="upload-subtext">Required • JPG, PNG</div>
+                  <input
+                    type="file"
+                    name="avatar"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                    required
+                  />
+                </label>
 
-        {/* ✅ Login link */}
-        <p className="redirect-text">
-          Already have an account?{" "}
-          <Link to="/login" className="redirect-link">
-            Log in
-          </Link>
-        </p>
+                <label
+                  className={`file-upload ${coverImage ? "uploaded" : ""}`}
+                >
+                  <div className="upload-icon">🖼️</div>
+                  <div className="upload-text">
+                    {coverImage ? "Cover Uploaded" : "Upload Cover"}
+                  </div>
+                  <div className="upload-subtext">Optional • JPG, PNG</div>
+                  <input
+                    type="file"
+                    name="coverimage"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="register-btn">
+              {loading ? (
+                <>
+                  <span className="loader"></span>
+                  <span style={{ marginLeft: "10px" }}>
+                    Creating Account...
+                  </span>
+                </>
+              ) : (
+                "Create Account"
+              )}
+            </button>
+          </form>
+
+          <div className="redirect-section">
+            <p className="redirect-text">Already have an account?</p>
+            <Link to="/login" className="redirect-link">
+              Sign In Here
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -15,56 +15,62 @@ const VideoPopulator = () => {
 
   // Get story categories from the API
   const categories = memeApiService.getStoryCategories();
-  console.log('Categories loaded:', categories); // Debug log
+  console.log("Categories loaded:", categories); // Debug log
 
   useEffect(() => {
-    console.log('VideoPopulator mounted, fetching videos...'); // Debug log
+    console.log("VideoPopulator mounted, fetching videos..."); // Debug log
     fetchVideos();
   }, [selectedCategory]);
 
   const fetchVideos = async () => {
-    console.log('🎬 VideoPopulator: Starting video fetch');
-    console.log('📂 VideoPopulator: Selected category:', selectedCategory);
-    
+    console.log("🎬 VideoPopulator: Starting video fetch");
+    console.log("📂 VideoPopulator: Selected category:", selectedCategory);
+
     setLoading(true);
     try {
-      console.log('🔍 VideoPopulator: Calling memeApiService.getVideosByCategory');
-      console.log('📊 VideoPopulator: memeApiService object:', memeApiService);
-      
+      console.log(
+        "🔍 VideoPopulator: Calling memeApiService.getVideosByCategory"
+      );
+      console.log("📊 VideoPopulator: memeApiService object:", memeApiService);
+
       const response = await memeApiService.getVideosByCategory(
         selectedCategory,
         20
       );
 
-      console.log('📦 VideoPopulator: Raw API response:', response);
-      console.log('📊 VideoPopulator: Response data:', response.data);
-      console.log('📈 VideoPopulator: Response success:', response.success);
+      console.log("📦 VideoPopulator: Raw API response:", response);
+      console.log("📊 VideoPopulator: Response data:", response.data);
+      console.log("📈 VideoPopulator: Response success:", response.success);
 
       // Extract the data array from the response
       const fetchedVideos = response.data || [];
-      console.log('📹 VideoPopulator: Extracted videos:', fetchedVideos);
-      console.log('📏 VideoPopulator: Videos count:', fetchedVideos.length);
-      
+      console.log("📹 VideoPopulator: Extracted videos:", fetchedVideos);
+      console.log("📏 VideoPopulator: Videos count:", fetchedVideos.length);
+
       if (fetchedVideos.length > 0) {
-        console.log('🎯 VideoPopulator: First video sample:', {
+        console.log("🎯 VideoPopulator: First video sample:", {
           id: fetchedVideos[0].id,
           title: fetchedVideos[0].title,
           thumbnail: fetchedVideos[0].thumbnail,
-          description: fetchedVideos[0].description
+          description: fetchedVideos[0].description,
         });
       }
-      
+
       setVideos(fetchedVideos);
       setUploadStatus(
         `✅ Loaded ${fetchedVideos.length} ${selectedCategory} story videos`
       );
-      
-      console.log('✅ VideoPopulator: State updated with', fetchedVideos.length, 'videos');
+
+      console.log(
+        "✅ VideoPopulator: State updated with",
+        fetchedVideos.length,
+        "videos"
+      );
     } catch (error) {
       console.error("❌ VideoPopulator: Error fetching videos:", error);
       console.error("🔍 VideoPopulator: Error details:", {
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       setVideos([]);
       setUploadStatus("❌ Failed to fetch story content");
@@ -216,7 +222,10 @@ const VideoPopulator = () => {
     <div className="video-populator">
       <div className="populator-header">
         <h2>🎬 Story Content Populator</h2>
-        <p>Fetch and upload story-ready video content to create immersive branching narratives</p>
+        <p>
+          Fetch and upload story-ready video content to create immersive
+          branching narratives
+        </p>
       </div>
 
       {/* Category Selection */}
@@ -251,7 +260,9 @@ const VideoPopulator = () => {
           onClick={uploadAllVideos}
           disabled={loading || autoUpload || !videos.length}
         >
-          {autoUpload ? "📤 Uploading..." : `📤 Add All to Library (${videos.length})`}
+          {autoUpload
+            ? "📤 Uploading..."
+            : `📤 Add All to Library (${videos.length})`}
         </button>
       </div>
 
@@ -282,14 +293,17 @@ const VideoPopulator = () => {
       {/* Video Grid */}
       <div className="videos-grid">
         {(() => {
-          console.log('🎨 VideoPopulator: Rendering video grid');
-          console.log('⏳ VideoPopulator: Loading state:', loading);
-          console.log('📊 VideoPopulator: Current videos state:', videos);
-          console.log('📏 VideoPopulator: Videos array length:', videos.length);
-          console.log('🔍 VideoPopulator: Videos is array?', Array.isArray(videos));
-          
+          console.log("🎨 VideoPopulator: Rendering video grid");
+          console.log("⏳ VideoPopulator: Loading state:", loading);
+          console.log("📊 VideoPopulator: Current videos state:", videos);
+          console.log("📏 VideoPopulator: Videos array length:", videos.length);
+          console.log(
+            "🔍 VideoPopulator: Videos is array?",
+            Array.isArray(videos)
+          );
+
           if (loading) {
-            console.log('⏳ VideoPopulator: Showing loading skeleton');
+            console.log("⏳ VideoPopulator: Showing loading skeleton");
             return (
               <div className="loading-grid">
                 {Array(8)
@@ -304,82 +318,93 @@ const VideoPopulator = () => {
               </div>
             );
           }
-          
+
           if (videos.length === 0) {
-            console.log('⚠️ VideoPopulator: No videos to display');
+            console.log("⚠️ VideoPopulator: No videos to display");
             return (
               <div className="no-videos-message">
-                <p>No videos loaded. Click "Load Story Content" to fetch videos.</p>
+                <p>
+                  No videos loaded. Click "Load Story Content" to fetch videos.
+                </p>
               </div>
             );
           }
-          
-          console.log('✨ VideoPopulator: Rendering', videos.length, 'video cards');
+
+          console.log(
+            "✨ VideoPopulator: Rendering",
+            videos.length,
+            "video cards"
+          );
           if (Array.isArray(videos)) {
             return videos.map((video, index) => {
               console.log(`🎬 VideoPopulator: Rendering video ${index + 1}:`, {
                 id: video.id,
                 title: video.title,
-                thumbnail: video.thumbnail
+                thumbnail: video.thumbnail,
               });
-              
+
               return (
-            <div key={video.id || index} className="video-card">
-              <div 
-                className="video-thumbnail"
-                onClick={() => openVideoModal(video)}
-              >
-                <img 
-                  src={video.thumbnail || "https://picsum.photos/400/300?random=1"} 
-                  alt={video.title || "Video thumbnail"}
-                  onError={(e) => {
-                    console.log('Image failed to load:', video.thumbnail);
-                    e.target.src = "https://picsum.photos/400/300?random=1";
-                  }}
-                />
-                <div className="play-overlay">
-                  <button className="play-button">▶</button>
+                <div key={video.id || index} className="video-card">
+                  <div
+                    className="video-thumbnail"
+                    onClick={() => openVideoModal(video)}
+                  >
+                    <img
+                      src={
+                        video.thumbnail ||
+                        "https://picsum.photos/400/300?random=1"
+                      }
+                      alt={video.title || "Video thumbnail"}
+                      onError={(e) => {
+                        console.log("Image failed to load:", video.thumbnail);
+                        e.target.src = "https://picsum.photos/400/300?random=1";
+                      }}
+                    />
+                    <div className="play-overlay">
+                      <button className="play-button">▶</button>
+                    </div>
+                    <div className="video-duration">{video.duration}s</div>
+                    <div className="video-source">{video.source || "Demo"}</div>
+                  </div>
+
+                  <div className="video-info">
+                    <h4 className="video-title">
+                      {video.title || "Untitled Video"}
+                    </h4>
+                    <p className="video-description">
+                      {video.description?.length > 100
+                        ? `${video.description.substring(0, 100)}...`
+                        : video.description || "No description available"}
+                    </p>
+
+                    <div className="video-stats">
+                      <span className="votes">👍 {video.votes}</span>
+                      <span className="views">👁️ {video.views}</span>
+                    </div>
+                  </div>
+
+                  <div className="video-actions">
+                    <button
+                      className="upload-single-btn"
+                      onClick={() => uploadSingleVideo(video)}
+                      disabled={autoUpload}
+                    >
+                      📤 Upload
+                    </button>
+
+                    <button
+                      className="create-story-btn"
+                      onClick={() => createStoryFromVideo(video)}
+                      disabled={autoUpload}
+                    >
+                      📝 Create Story
+                    </button>
+                  </div>
                 </div>
-                <div className="video-duration">{video.duration}s</div>
-                <div className="video-source">{video.source || "Demo"}</div>
-              </div>
-
-              <div className="video-info">
-                <h4 className="video-title">{video.title || "Untitled Video"}</h4>
-                <p className="video-description">
-                  {video.description?.length > 100
-                    ? `${video.description.substring(0, 100)}...`
-                    : video.description || "No description available"}
-                </p>
-
-                <div className="video-stats">
-                  <span className="votes">👍 {video.votes}</span>
-                  <span className="views">👁️ {video.views}</span>
-                </div>
-              </div>
-
-              <div className="video-actions">
-                <button
-                  className="upload-single-btn"
-                  onClick={() => uploadSingleVideo(video)}
-                  disabled={autoUpload}
-                >
-                  📤 Upload
-                </button>
-
-                <button
-                  className="create-story-btn"
-                  onClick={() => createStoryFromVideo(video)}
-                  disabled={autoUpload}
-                >
-                  📝 Create Story
-                </button>
-              </div>
-            </div>
               );
             });
           }
-          
+
           return null;
         })()}
       </div>
@@ -389,19 +414,24 @@ const VideoPopulator = () => {
         <h3>💡 How to Create Stories:</h3>
         <ol>
           <li>
-            <strong>Select Genre:</strong> Choose the story genre that fits your narrative vision
+            <strong>Select Genre:</strong> Choose the story genre that fits your
+            narrative vision
           </li>
           <li>
-            <strong>Load Content:</strong> Click "Load Story Content" to fetch themed videos
+            <strong>Load Content:</strong> Click "Load Story Content" to fetch
+            themed videos
           </li>
           <li>
-            <strong>Upload Individual:</strong> Click "Upload" on specific videos to add them to your library
+            <strong>Upload Individual:</strong> Click "Upload" on specific
+            videos to add them to your library
           </li>
           <li>
-            <strong>Batch Upload:</strong> Use "Add All to Library" to upload all loaded content
+            <strong>Batch Upload:</strong> Use "Add All to Library" to upload
+            all loaded content
           </li>
           <li>
-            <strong>Create Stories:</strong> Click "Create Story" to turn any video into an interactive branching narrative
+            <strong>Create Stories:</strong> Click "Create Story" to turn any
+            video into an interactive branching narrative
           </li>
         </ol>
 
@@ -424,7 +454,9 @@ const VideoPopulator = () => {
       {selectedVideo && (
         <div className="video-modal" onClick={closeVideoModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={closeVideoModal}>×</button>
+            <button className="close-btn" onClick={closeVideoModal}>
+              ×
+            </button>
             <h3>{selectedVideo.title}</h3>
             <video
               controls
