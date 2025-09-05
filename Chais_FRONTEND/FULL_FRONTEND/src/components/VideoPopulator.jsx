@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import memeApiService from "../services/memeApi.js";
 import axios from "axios";
+import Navbar from "./Navbar";
+import { useNavbar } from "../contexts/NavbarContext";
 import "./VideoPopulator.css";
 
 const VideoPopulator = () => {
@@ -12,6 +14,7 @@ const VideoPopulator = () => {
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const { isCollapsed } = useNavbar();
 
   // Get story categories from the API
   const categories = memeApiService.getStoryCategories();
@@ -219,7 +222,9 @@ const VideoPopulator = () => {
   };
 
   return (
-    <div className="video-populator">
+    <>
+      <Navbar />
+      <div className={`video-populator with-navbar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="populator-header">
         <h2>🎬 Story Content Populator</h2>
         <p>
@@ -471,6 +476,7 @@ const VideoPopulator = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

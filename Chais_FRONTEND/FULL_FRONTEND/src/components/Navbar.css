@@ -236,6 +236,7 @@
 .nav-item.orange:hover { background: rgba(251, 146, 60, 0.1); color: #fb923c; }
 .nav-item.teal:hover { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
 .nav-item.pink:hover { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+.nav-item.yellow:hover { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
 
 /* Footer Section */
 .navbar-footer {
@@ -335,7 +336,10 @@
 }
 
 @media (max-width: 768px) {
-  .with-navbar,
+  .with-navbar {
+    margin-left: 0;
+  }
+  
   .with-navbar.collapsed {
     margin-left: 0;
   }

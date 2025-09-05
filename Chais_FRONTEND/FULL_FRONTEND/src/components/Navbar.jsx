@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useNavbar } from "../contexts/NavbarContext";
 import "./Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useNavbar();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -43,6 +44,7 @@ export default function Navbar() {
       label: "Create Story",
       color: "pink",
     },
+    { path: "/populate", icon: "🎲", label: "Populate", color: "yellow" },
   ];
 
   const isActive = (path) => location.pathname === path;

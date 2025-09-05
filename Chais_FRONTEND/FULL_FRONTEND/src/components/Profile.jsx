@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { useNavbar } from "../contexts/NavbarContext";
 import "./Profile.css";
 
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const { isCollapsed } = useNavbar();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -22,7 +24,9 @@ export default function Profile() {
   return (
     <>
       <Navbar />
-      <div className="profile-page with-navbar">
+      <div
+        className={`profile-page with-navbar ${isCollapsed ? "collapsed" : ""}`}
+      >
         {/* Floating background elements */}
         <div className="profile-background">
           <div className="bg-orb orb-1"></div>

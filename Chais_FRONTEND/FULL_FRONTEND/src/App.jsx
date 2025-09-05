@@ -1,5 +1,6 @@
 // src/App.js
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NavbarProvider } from "./contexts/NavbarContext";
 import Register from "./components/Register";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
@@ -20,35 +21,37 @@ import VideoPopulator from "./components/VideoPopulator";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Root/Landing */}
-        <Route path="/" element={<MainPage />} />
+    <NavbarProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Root/Landing */}
+          <Route path="/" element={<MainPage />} />
 
-        {/* Auth + User */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
+          {/* Auth + User */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
 
-        {/* Videos */}
-        <Route path="/upload" element={<UploadVideo />} />
-        <Route path="/videos" element={<AllVideos />} />
+          {/* Videos */}
+          <Route path="/upload" element={<UploadVideo />} />
+          <Route path="/videos" element={<AllVideos />} />
 
-        {/* Content Population */}
-        <Route path="/populate" element={<VideoPopulator />} />
+          {/* Content Population */}
+          <Route path="/populate" element={<VideoPopulator />} />
 
-        {/* Stories */}
-        <Route path="/stories" element={<StoriesList />} />
-        <Route path="/stories/create" element={<CreateStory />} />
-        <Route path="/stories/:storyId" element={<StoryDetail />} />
-        <Route path="/stories/:storyId/watch" element={<StoryViewer />} />
-        <Route path="/stories/:storyId/full" element={<StoryTree />} />
+          {/* Stories */}
+          <Route path="/stories" element={<StoriesList />} />
+          <Route path="/stories/create" element={<CreateStory />} />
+          <Route path="/stories/:storyId" element={<StoryDetail />} />
+          <Route path="/stories/:storyId/watch" element={<StoryViewer />} />
+          <Route path="/stories/:storyId/full" element={<StoryTree />} />
 
-        {/* Default (catch-all) */}
-        <Route path="*" element={<MainPage />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Default (catch-all) */}
+          <Route path="*" element={<MainPage />} />
+        </Routes>
+      </BrowserRouter>
+    </NavbarProvider>
   );
 }
 
