@@ -34,7 +34,13 @@ export default function Login() {
         { withCredentials: true }
       );
 
+      console.log("Login response:", res.data);
+
+      // Save both user and token
       localStorage.setItem("user", JSON.stringify(res.data.data.user));
+      localStorage.setItem("token", res.data.data.accessToken);
+
+      console.log("Token saved:", res.data.data.accessToken);
 
       setMessage({ type: "success", text: "✅ Login successful!" });
       setTimeout(() => navigate("/home"), 1200);
@@ -95,9 +101,7 @@ export default function Login() {
         </button>
 
         {message && (
-          <div className={`toast ${message.type}`}>
-            {message.text}
-          </div>
+          <div className={`toast ${message.type}`}>{message.text}</div>
         )}
       </form>
     </div>

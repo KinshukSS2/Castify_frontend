@@ -10,7 +10,7 @@ export default function MainPage() {
 
       {/* Centered Content */}
       <div className="content">
-        <h1 className="title">Welcome to Chai App ☕</h1>
+        <h1 className="title">Welcome to Castify </h1>
         <p className="subtitle">Stream. Connect. Enjoy.</p>
 
         <div className="actions">

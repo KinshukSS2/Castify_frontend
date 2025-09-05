@@ -2,25 +2,155 @@ import { useEffect, useState } from "react";
 import axiosInstance from "./api/axiosInstance";
 import "./AllVideoscss.css";
 
-
 const AllVideos = () => {
   const [videos, setVideos] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [votingStatus, setVotingStatus] = useState({}); // Track voting states
+  const [currentUser, setCurrentUser] = useState(null);
+  const [playingVideo, setPlayingVideo] = useState(null); // Track which video is playing
+  const [selectedVideo, setSelectedVideo] = useState(null); // For fullscreen modal
+
+  useEffect(() => {
+    // Get current user from localStorage
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   const fetchVideos = async (page = 1) => {
     try {
-      const res = await axiosInstance.get(`/getAll-videos?page=${page}&limit=12`);
-      setVideos(res.data.videos);
-      setTotalPages(res.data.totalPages);
+      console.log('🎬 AllVideos: Fetching videos for page:', page);
+      console.log('🔗 API URL:', `/getAll-videos?page=${page}&limit=12`);
+      
+      const res = await axiosInstance.get(
+        `/getAll-videos?page=${page}&limit=12`
+      );
+      
+      console.log('📦 AllVideos: Raw API response:', res);
+      console.log('📊 AllVideos: Response data:', res.data);
+      console.log('📹 AllVideos: Videos array:', res.data.videos);
+      console.log('📈 AllVideos: Videos count:', res.data.videos?.length || 0);
+      
+      if (res.data.videos && res.data.videos.length > 0) {
+        console.log('🎯 AllVideos: First video sample:', {
+          id: res.data.videos[0]._id,
+          title: res.data.videos[0].title,
+          thumbnail: res.data.videos[0].thumbnail,
+          description: res.data.videos[0].description
+        });
+      }
+      
+      setVideos(res.data.videos || []);
+      setTotalPages(res.data.totalPages || 1);
+      
+      console.log('✅ AllVideos: State updated with', res.data.videos?.length || 0, 'videos');
     } catch (err) {
-      console.error("Error fetching videos:", err);
+      console.error("❌ AllVideos: Error fetching videos:", err);
+      console.error("🔍 Error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      setVideos([]);
     }
+  };
+
+  const handleVote = async (videoId, voteType) => {
+    try {
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "voting" }));
+
+      // Make API call to vote (correct endpoint - no /videos prefix since baseURL already includes it)
+      const response = await axiosInstance.post(`/${videoId}/vote`, {
+        voteType: voteType, // 'upvote' or 'downvote'
+      });
+
+      // Update the video in the local state
+      setVideos((prevVideos) =>
+        prevVideos.map((video) =>
+          video._id === videoId
+            ? {
+                ...video,
+                upvotes: response.data.data.upvotes || 0,
+                downvotes: response.data.data.downvotes || 0,
+                votes: response.data.data.totalVotes || 0,
+              }
+            : video
+        )
+      );
+
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "success" }));
+
+      // Clear status after animation
+      setTimeout(() => {
+        setVotingStatus((prev) => ({ ...prev, [videoId]: null }));
+      }, 1000);
+    } catch (error) {
+      console.error("Error voting:", error);
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "error" }));
+
+      // Clear error status
+      setTimeout(() => {
+        setVotingStatus((prev) => ({ ...prev, [videoId]: null }));
+      }, 2000);
+    }
+  };
+
+  const handleDeleteVideo = async (videoId) => {
+    if (!window.confirm("Are you sure you want to delete this video?")) {
+      return;
+    }
+
+    try {
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "deleting" }));
+
+      await axiosInstance.delete(`/${videoId}`);
+
+      // Remove video from local state
+      setVideos((prevVideos) =>
+        prevVideos.filter((video) => video._id !== videoId)
+      );
+
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "deleted" }));
+    } catch (error) {
+      console.error("Error deleting video:", error);
+
+      if (error.response?.status === 403) {
+        alert("❌ You can only delete your own videos");
+      } else if (error.response?.status === 401) {
+        alert("❌ Please login to delete videos");
+      } else {
+        alert("❌ Failed to delete video");
+      }
+
+      setVotingStatus((prev) => ({ ...prev, [videoId]: "delete-error" }));
+
+      // Clear error status
+      setTimeout(() => {
+        setVotingStatus((prev) => ({ ...prev, [videoId]: null }));
+      }, 2000);
+    }
+  };
+
+  const handlePlayVideo = (videoId) => {
+    const video = videos.find(v => v._id === videoId);
+    setSelectedVideo(video);
+  };
+
+  const closeVideoModal = () => {
+    setSelectedVideo(null);
   };
 
   useEffect(() => {
     fetchVideos(page);
   }, [page]);
+
+  useEffect(() => {
+    // Initial load when component mounts
+    console.log('AllVideos component mounted, loading videos...');
+    fetchVideos(1);
+  }, []);
 
   return (
     <div className="all-videos-container">
@@ -28,22 +158,126 @@ const AllVideos = () => {
 
       {/* Video Grid */}
       <div className="video-grid">
-        {videos.map((video) => (
+        {(() => {
+          console.log('🎨 AllVideos: Rendering video grid');
+          console.log('📊 AllVideos: Current videos state:', videos);
+          console.log('📏 AllVideos: Videos array length:', videos.length);
+          
+          if (videos.length === 0) {
+            console.log('⚠️ AllVideos: No videos to display');
+            return (
+              <div className="no-videos">
+                <p>No videos found. Upload some videos to get started!</p>
+              </div>
+            );
+          }
+          
+          console.log('✨ AllVideos: Rendering', videos.length, 'video cards');
+          return videos.map((video, index) => {
+            console.log(`🎬 AllVideos: Rendering video ${index + 1}:`, {
+              id: video._id,
+              title: video.title,
+              thumbnail: video.thumbnail
+            });
+            
+            return (
           <div key={video._id} className="video-card">
             <div className="thumbnail-wrapper">
-              <img src={video.thumbnail} alt={video.title} className="thumbnail" />
+              <img
+                src={video.thumbnail || "https://picsum.photos/400/300?random=1"}
+                alt={video.title || "Video thumbnail"}
+                className="thumbnail"
+                onError={(e) => {
+                  console.log('Image failed to load:', video.thumbnail);
+                  e.target.src = "https://picsum.photos/400/300?random=1";
+                }}
+              />
               <div className="overlay">
-                <button className="play-btn">▶ Play</button>
+                <button 
+                  className="play-btn"
+                  onClick={() => handlePlayVideo(video._id)}
+                >
+                  ▶ Play
+                </button>
               </div>
             </div>
             <div className="video-content">
-              <h3 className="video-title">{video.title}</h3>
-              <p className="video-desc">{video.description}</p>
-              <video controls src={video.videoFile} className="video-player"></video>
+              <h3 className="video-title">{video.title || "Untitled Video"}</h3>
+              <p className="video-desc">{video.description || "No description available"}</p>
+
+              {/* Vote Buttons */}
+              <div className="vote-section">
+                <button
+                  className={`vote-btn upvote ${
+                    votingStatus[video._id] === "voting" ? "voting" : ""
+                  }`}
+                  onClick={() => handleVote(video._id, "upvote")}
+                  disabled={votingStatus[video._id] === "voting"}
+                >
+                  👍 {video.upvotes || 0}
+                </button>
+                <button
+                  className={`vote-btn downvote ${
+                    votingStatus[video._id] === "voting" ? "voting" : ""
+                  }`}
+                  onClick={() => handleVote(video._id, "downvote")}
+                  disabled={votingStatus[video._id] === "voting"}
+                >
+                  👎 {video.downvotes || 0}
+                </button>
+
+                {/* Delete Button - Only show for video owner */}
+                {currentUser && video.owner === currentUser._id && (
+                  <button
+                    className={`delete-btn ${
+                      votingStatus[video._id] === "deleting" ? "deleting" : ""
+                    }`}
+                    onClick={() => handleDeleteVideo(video._id)}
+                    disabled={votingStatus[video._id] === "deleting"}
+                    title="Delete Video"
+                  >
+                    {votingStatus[video._id] === "deleting" ? "⏳" : "🗑️"}
+                  </button>
+                )}
+
+                {votingStatus[video._id] === "success" && (
+                  <span className="vote-feedback success">✅ Voted!</span>
+                )}
+                {votingStatus[video._id] === "error" && (
+                  <span className="vote-feedback error">❌ Error</span>
+                )}
+                {votingStatus[video._id] === "deleted" && (
+                  <span className="vote-feedback success">✅ Deleted!</span>
+                )}
+                {votingStatus[video._id] === "delete-error" && (
+                  <span className="vote-feedback error">❌ Delete Failed</span>
+                )}
+              </div>
             </div>
           </div>
-        ))}
+            );
+          });
+        })()}
       </div>
+
+      {/* Video Modal for Fullscreen Playback */}
+      {selectedVideo && (
+        <div className="video-modal" onClick={closeVideoModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={closeVideoModal}>×</button>
+            <h3>{selectedVideo.title}</h3>
+            <video
+              controls
+              autoPlay
+              src={selectedVideo.videoFile}
+              className="modal-video"
+            >
+              Your browser does not support the video tag.
+            </video>
+            <p className="video-description">{selectedVideo.description}</p>
+          </div>
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="pagination">
@@ -53,7 +287,10 @@ const AllVideos = () => {
         <span>
           {page} / {totalPages}
         </span>
-        <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+        >
           Next ➡
         </button>
       </div>
