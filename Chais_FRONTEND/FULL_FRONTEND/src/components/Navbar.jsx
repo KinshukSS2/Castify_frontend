@@ -44,6 +44,14 @@ export default function Navbar() {
       label: "Create Story",
       color: "pink",
     },
+    { path: "/store", icon: "🛍️", label: "Store", color: "purple" },
+    { path: "/orders", icon: "📦", label: "My Orders", color: "blue" },
+    {
+      path: "/dashboard",
+      icon: "📊",
+      label: "Order Dashboard",
+      color: "green",
+    },
     { path: "/populate", icon: "🎲", label: "Populate", color: "yellow" },
   ];
 

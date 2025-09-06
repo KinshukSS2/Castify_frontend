@@ -42,23 +42,13 @@ export default function Home() {
   const fetchRecentStories = async () => {
     try {
       const response = await listStories();
-      console.log("Stories response:", response); // Debug log
-
-      // Check if response.data exists and is an array
-      const storiesData = Array.isArray(response.data)
-        ? response.data
-        : Array.isArray(response.data?.stories)
-        ? response.data.stories
-        : [];
-
       // Sort stories by creation date (most recent first) and get top 6
-      const recentStories = storiesData
+      const recentStories = response.data
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 6);
       setRecentStories(recentStories);
     } catch (err) {
       console.error("Failed to fetch recent stories:", err);
-      setRecentStories([]); // Set empty array on error
     }
   };
 
@@ -104,29 +94,74 @@ export default function Home() {
           <div className="hero-stats">
             <div className="stat-card">
               <div className="stat-number">{videos.length}</div>
-              <div className="stat-label">Videos Available</div>
+              <div className="stat-label">Videos</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">∞</div>
-              <div className="stat-label">Possibilities</div>
+              <div className="stat-number">{recentStories.length}</div>
+              <div className="stat-label">Stories</div>
             </div>
             <div className="stat-card">
-              <div className="stat-number">🎬</div>
-              <div className="stat-label">Entertainment</div>
+              <div className="stat-number">4.9</div>
+              <div className="stat-label">Rating</div>
             </div>
           </div>
         </section>
 
-        {/* Featured Videos Section */}
-        <section className="featured-section">
+        {/* Action Cards Grid */}
+        <section className="action-cards-section">
+          <div className="action-cards-grid">
+            <div
+              className="action-card upload-card"
+              onClick={() => navigate("/upload")}
+            >
+              <div className="action-icon">🎥</div>
+              <h3>Upload Video</h3>
+              <p>Share your moments with the world</p>
+              <div className="action-arrow">→</div>
+            </div>
+
+            <div
+              className="action-card story-card"
+              onClick={() => navigate("/stories/create")}
+            >
+              <div className="action-icon">📚</div>
+              <h3>Create Story</h3>
+              <p>Tell interactive stories</p>
+              <div className="action-arrow">→</div>
+            </div>
+
+            <div
+              className="action-card explore-card"
+              onClick={() => navigate("/all-videos")}
+            >
+              <div className="action-icon">🌟</div>
+              <h3>Explore Content</h3>
+              <p>Discover amazing videos</p>
+              <div className="action-arrow">→</div>
+            </div>
+
+            <div
+              className="action-card store-card"
+              onClick={() => navigate("/store")}
+            >
+              <div className="action-icon">🛍️</div>
+              <h3>Visit Store</h3>
+              <p>Shop exclusive merchandise</p>
+              <div className="action-arrow">→</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Latest Videos Section */}
+        <section className="latest-videos-section">
           <div className="section-header">
             <h2 className="section-title">
-              <span className="title-icon">🔥</span>
-              Featured Content
+              <span className="title-icon">🎬</span>
+              Latest Videos
             </h2>
             <button
               className="view-all-btn"
-              onClick={() => navigate("/videos")}
+              onClick={() => navigate("/all-videos")}
             >
               View All
               <span className="btn-arrow">→</span>
@@ -135,9 +170,9 @@ export default function Home() {
 
           {videos.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">�</div>
+              <div className="empty-icon">🎥</div>
               <h3>No videos yet</h3>
-              <p>Be the first to upload amazing content!</p>
+              <p>Start sharing your amazing content!</p>
               <button
                 className="upload-btn"
                 onClick={() => navigate("/upload")}
@@ -147,30 +182,32 @@ export default function Home() {
             </div>
           ) : (
             <div className="videos-grid">
-              {videos.slice(0, 8).map((video, index) => (
+              {videos.slice(0, 6).map((video) => (
                 <div
                   key={video._id}
                   className="video-card"
-                  style={{ animationDelay: `${index * 0.1}s` }}
                   onClick={() => openVideoModal(video)}
                 >
-                  <div className="card-thumbnail">
+                  <div className="video-thumbnail">
                     <img src={video.thumbnail} alt={video.title} />
-                    <div className="thumbnail-overlay">
-                      <div className="play-btn">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
+                    <div className="play-overlay">
+                      <div className="play-button">▶</div>
                     </div>
-                    <div className="video-duration">5:30</div>
+                    <div className="video-duration">
+                      {Math.floor(video.duration / 60)}:
+                      {String(video.duration % 60).padStart(2, "0")}
+                    </div>
                   </div>
-                  <div className="card-content">
+                  <div className="video-info">
                     <h3 className="video-title">{video.title}</h3>
-                    <p className="video-description">{video.description}</p>
-                    <div className="video-meta">
-                      <span className="upload-date">2 days ago</span>
-                      <span className="video-views">1.2K views</span>
+                    <p className="video-description">
+                      {video.description?.slice(0, 80)}...
+                    </p>
+                    <div className="video-stats">
+                      <span className="views">👁 {video.views || 0} views</span>
+                      <span className="date">
+                        {new Date(video.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -201,7 +238,7 @@ export default function Home() {
               <h3>No stories yet</h3>
               <p>Start creating amazing interactive stories!</p>
               <button
-                className="upload-btn"
+                className="create-story-btn"
                 onClick={() => navigate("/stories/create")}
               >
                 Create Your First Story
@@ -212,124 +249,99 @@ export default function Home() {
               {recentStories.map((story, index) => (
                 <div
                   key={story._id}
-                  className="story-card"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className={`story-card story-card-${index + 1}`}
                   onClick={() => navigate(`/stories/${story._id}`)}
                 >
                   <div className="story-header">
-                    <div className="story-badge">
-                      <span className="badge-rank">#{index + 1}</span>
-                      <span className="badge-text">Top Story</span>
-                    </div>
-                    <div className="story-stats">
-                      <div className="stat">
-                        <span className="stat-icon">❤️</span>
-                        <span className="stat-value">
-                          {story.totalLikes || 0}
-                        </span>
-                      </div>
-                      <div className="stat">
-                        <span className="stat-icon">👁️</span>
-                        <span className="stat-value">
-                          {story.totalViews || 0}
-                        </span>
-                      </div>
+                    <div className="story-number">{index + 1}</div>
+                    <div className="story-date">
+                      {new Date(story.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-
                   <div className="story-content">
                     <h3 className="story-title">{story.title}</h3>
                     <p className="story-description">
-                      {story.description ||
-                        "An amazing interactive story awaits you..."}
+                      {story.description?.slice(0, 100)}...
                     </p>
-
-                    <div className="story-info">
-                      <div className="creator-info">
-                        <div className="creator-avatar">
-                          {story.createdBy?.fullname?.[0]?.toUpperCase() || "U"}
-                        </div>
-                        <span className="creator-name">
-                          {story.createdBy?.fullname || "Anonymous"}
-                        </span>
-                      </div>
-
-                      <div className="story-meta">
-                        <span className="story-chapters">
-                          📚 {story.videoCount || 0} chapters
-                        </span>
-                        <span className="story-date">
-                          {new Date(story.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
+                  </div>
+                  <div className="story-stats">
+                    <div className="stat">
+                      <span className="stat-icon">👁</span>
+                      <span className="stat-value">
+                        {story.totalViews || 0}
+                      </span>
+                    </div>
+                    <div className="stat">
+                      <span className="stat-icon">❤️</span>
+                      <span className="stat-value">
+                        {story.totalLikes || 0}
+                      </span>
+                    </div>
+                    <div className="stat">
+                      <span className="stat-icon">🔗</span>
+                      <span className="stat-value">
+                        {story.choices?.length || 0}
+                      </span>
                     </div>
                   </div>
-
-                  <div className="story-overlay">
-                    <div className="play-story-btn">
-                      <span className="play-icon">▶️</span>
-                      <span className="play-text">Start Story</span>
-                    </div>
-                  </div>
+                  <div className="story-gradient"></div>
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        {/* Quick Actions Section */}
-        <section className="quick-actions">
-          <h3 className="actions-title">Quick Actions</h3>
-          <div className="actions-grid">
-            <button
-              className="action-card upload"
-              onClick={() => navigate("/upload")}
-            >
-              <div className="action-icon">📤</div>
-              <div className="action-title">Upload Video</div>
-              <div className="action-desc">Share your content</div>
-            </button>
-            <button
-              className="action-card story"
-              onClick={() => navigate("/stories/create")}
-            >
-              <div className="action-icon">📝</div>
-              <div className="action-title">Create Story</div>
-              <div className="action-desc">Tell your story</div>
-            </button>
-            <button
-              className="action-card explore"
-              onClick={() => navigate("/videos")}
-            >
-              <div className="action-icon">🌟</div>
-              <div className="action-title">Explore</div>
-              <div className="action-desc">Discover content</div>
-            </button>
-          </div>
-        </section>
+        {/* Quick Actions Floating Bar */}
+        <div className="quick-actions-bar">
+          <button
+            className="quick-action-btn upload-quick"
+            onClick={() => navigate("/upload")}
+            title="Upload Video"
+          >
+            <span className="action-icon">🎥</span>
+          </button>
+          <button
+            className="quick-action-btn story-quick"
+            onClick={() => navigate("/stories/create")}
+            title="Create Story"
+          >
+            <span className="action-icon">📝</span>
+          </button>
+          <button
+            className="quick-action-btn profile-quick"
+            onClick={() => navigate("/profile")}
+            title="Profile"
+          >
+            <span className="action-icon">👤</span>
+          </button>
+        </div>
 
         {/* Video Modal */}
         {selectedVideo && (
-          <div className="video-modal" onClick={closeVideoModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-close" onClick={closeVideoModal}>
+          <div className="video-modal-overlay" onClick={closeVideoModal}>
+            <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="close-modal-btn" onClick={closeVideoModal}>
                 ×
               </button>
-              <div className="modal-header">
-                <h3>{selectedVideo.title}</h3>
-              </div>
               <div className="modal-video-container">
                 <video
+                  src={selectedVideo.videoFile}
                   controls
                   autoPlay
-                  src={selectedVideo.videoFile}
                   className="modal-video"
                 >
                   Your browser does not support the video tag.
                 </video>
               </div>
-              <div className="modal-description">
+              <div className="modal-video-info">
+                <h3>{selectedVideo.title}</h3>
                 <p>{selectedVideo.description}</p>
+                <div className="modal-video-stats">
+                  <span>👁 {selectedVideo.views || 0} views</span>
+                  <span>
+                    📅 {new Date(selectedVideo.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

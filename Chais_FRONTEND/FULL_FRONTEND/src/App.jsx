@@ -8,6 +8,8 @@ import Login from "./components/Login";
 import MainPage from "./components/MainPage";
 import UploadVideo from "./components/UploadVideo";
 import AllVideos from "./components/AllVideos";
+import Merchandise from "./components/Merchandise";
+import Checkout from "./components/Checkout";
 
 // 🆕 Import Story-related pages
 import StoriesList from "./components/StoriesList";
@@ -18,6 +20,11 @@ import StoryViewer from "./components/StoryViewer";
 
 // 🎬 Import Video Populator
 import VideoPopulator from "./components/VideoPopulator";
+
+// 📦 Import Order Tracking Components
+import OrderTracking from "./components/OrderTracking";
+import OrderDashboard from "./components/OrderDashboard";
+import OrderTestPopulator from "./components/OrderTestPopulator";
 
 function App() {
   return (
@@ -36,6 +43,15 @@ function App() {
           {/* Videos */}
           <Route path="/upload" element={<UploadVideo />} />
           <Route path="/videos" element={<AllVideos />} />
+
+          {/* Merchandise Store */}
+          <Route path="/store" element={<Merchandise />} />
+          <Route path="/checkout" element={<Checkout />} />
+
+          {/* Order Management */}
+          <Route path="/orders" element={<OrderTracking />} />
+          <Route path="/dashboard" element={<OrderDashboard />} />
+          <Route path="/test-orders" element={<OrderTestPopulator />} />
 
           {/* Content Population */}
           <Route path="/populate" element={<VideoPopulator />} />

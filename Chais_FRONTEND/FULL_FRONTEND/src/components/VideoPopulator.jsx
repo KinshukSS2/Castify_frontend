@@ -224,258 +224,276 @@ const VideoPopulator = () => {
   return (
     <>
       <Navbar />
-      <div className={`video-populator with-navbar ${isCollapsed ? "collapsed" : ""}`}>
-      <div className="populator-header">
-        <h2>🎬 Story Content Populator</h2>
-        <p>
-          Fetch and upload story-ready video content to create immersive
-          branching narratives
-        </p>
-      </div>
-
-      {/* Category Selection */}
-      <div className="category-selector">
-        <h3>Select Story Genre:</h3>
-        <div className="category-grid">
-          {categories.map((category) => (
-            <button
-              key={category.value}
-              className={`category-btn ${
-                selectedCategory === category.value ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory(category.value)}
-              disabled={loading}
-              title={category.description}
-            >
-              <span className="category-icon">{category.icon}</span>
-              <span className="category-label">{category.label}</span>
-            </button>
-          ))}
+      <div
+        className={`video-populator with-navbar ${
+          isCollapsed ? "collapsed" : ""
+        }`}
+      >
+        <div className="populator-header">
+          <h2>🎬 Story Content Populator</h2>
+          <p>
+            Fetch and upload story-ready video content to create immersive
+            branching narratives
+          </p>
         </div>
-      </div>
 
-      {/* Action Buttons */}
-      <div className="action-buttons">
-        <button className="fetch-btn" onClick={fetchVideos} disabled={loading}>
-          {loading ? "🔄 Loading..." : "🔄 Load Story Content"}
-        </button>
-
-        <button
-          className="upload-all-btn"
-          onClick={uploadAllVideos}
-          disabled={loading || autoUpload || !videos.length}
-        >
-          {autoUpload
-            ? "📤 Uploading..."
-            : `📤 Add All to Library (${videos.length})`}
-        </button>
-      </div>
-
-      {/* Upload Progress */}
-      {autoUpload && (
-        <div className="upload-progress">
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${uploadProgress}%` }}
-            ></div>
+        {/* Category Selection */}
+        <div className="category-selector">
+          <h3>Select Story Genre:</h3>
+          <div className="category-grid">
+            {categories.map((category) => (
+              <button
+                key={category.value}
+                className={`category-btn ${
+                  selectedCategory === category.value ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory(category.value)}
+                disabled={loading}
+                title={category.description}
+              >
+                <span className="category-icon">{category.icon}</span>
+                <span className="category-label">{category.label}</span>
+              </button>
+            ))}
           </div>
-          <span className="progress-text">{Math.round(uploadProgress)}%</span>
         </div>
-      )}
 
-      {/* Status Message */}
-      {uploadStatus && (
-        <div
-          className={`status-message ${
-            uploadStatus.includes("❌") ? "error" : "success"
-          }`}
-        >
-          {uploadStatus}
+        {/* Action Buttons */}
+        <div className="action-buttons">
+          <button
+            className="fetch-btn"
+            onClick={fetchVideos}
+            disabled={loading}
+          >
+            {loading ? "🔄 Loading..." : "🔄 Load Story Content"}
+          </button>
+
+          <button
+            className="upload-all-btn"
+            onClick={uploadAllVideos}
+            disabled={loading || autoUpload || !videos.length}
+          >
+            {autoUpload
+              ? "📤 Uploading..."
+              : `📤 Add All to Library (${videos.length})`}
+          </button>
         </div>
-      )}
 
-      {/* Video Grid */}
-      <div className="videos-grid">
-        {(() => {
-          console.log("🎨 VideoPopulator: Rendering video grid");
-          console.log("⏳ VideoPopulator: Loading state:", loading);
-          console.log("📊 VideoPopulator: Current videos state:", videos);
-          console.log("📏 VideoPopulator: Videos array length:", videos.length);
-          console.log(
-            "🔍 VideoPopulator: Videos is array?",
-            Array.isArray(videos)
-          );
+        {/* Upload Progress */}
+        {autoUpload && (
+          <div className="upload-progress">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+            <span className="progress-text">{Math.round(uploadProgress)}%</span>
+          </div>
+        )}
 
-          if (loading) {
-            console.log("⏳ VideoPopulator: Showing loading skeleton");
-            return (
-              <div className="loading-grid">
-                {Array(8)
-                  .fill(0)
-                  .map((_, i) => (
-                    <div key={i} className="video-card-skeleton">
-                      <div className="skeleton-thumbnail"></div>
-                      <div className="skeleton-title"></div>
-                      <div className="skeleton-description"></div>
-                    </div>
-                  ))}
-              </div>
+        {/* Status Message */}
+        {uploadStatus && (
+          <div
+            className={`status-message ${
+              uploadStatus.includes("❌") ? "error" : "success"
+            }`}
+          >
+            {uploadStatus}
+          </div>
+        )}
+
+        {/* Video Grid */}
+        <div className="videos-grid">
+          {(() => {
+            console.log("🎨 VideoPopulator: Rendering video grid");
+            console.log("⏳ VideoPopulator: Loading state:", loading);
+            console.log("📊 VideoPopulator: Current videos state:", videos);
+            console.log(
+              "📏 VideoPopulator: Videos array length:",
+              videos.length
             );
-          }
-
-          if (videos.length === 0) {
-            console.log("⚠️ VideoPopulator: No videos to display");
-            return (
-              <div className="no-videos-message">
-                <p>
-                  No videos loaded. Click "Load Story Content" to fetch videos.
-                </p>
-              </div>
+            console.log(
+              "🔍 VideoPopulator: Videos is array?",
+              Array.isArray(videos)
             );
-          }
 
-          console.log(
-            "✨ VideoPopulator: Rendering",
-            videos.length,
-            "video cards"
-          );
-          if (Array.isArray(videos)) {
-            return videos.map((video, index) => {
-              console.log(`🎬 VideoPopulator: Rendering video ${index + 1}:`, {
-                id: video.id,
-                title: video.title,
-                thumbnail: video.thumbnail,
-              });
-
+            if (loading) {
+              console.log("⏳ VideoPopulator: Showing loading skeleton");
               return (
-                <div key={video.id || index} className="video-card">
-                  <div
-                    className="video-thumbnail"
-                    onClick={() => openVideoModal(video)}
-                  >
-                    <img
-                      src={
-                        video.thumbnail ||
-                        "https://picsum.photos/400/300?random=1"
-                      }
-                      alt={video.title || "Video thumbnail"}
-                      onError={(e) => {
-                        console.log("Image failed to load:", video.thumbnail);
-                        e.target.src = "https://picsum.photos/400/300?random=1";
-                      }}
-                    />
-                    <div className="play-overlay">
-                      <button className="play-button">▶</button>
-                    </div>
-                    <div className="video-duration">{video.duration}s</div>
-                    <div className="video-source">{video.source || "Demo"}</div>
-                  </div>
-
-                  <div className="video-info">
-                    <h4 className="video-title">
-                      {video.title || "Untitled Video"}
-                    </h4>
-                    <p className="video-description">
-                      {video.description?.length > 100
-                        ? `${video.description.substring(0, 100)}...`
-                        : video.description || "No description available"}
-                    </p>
-
-                    <div className="video-stats">
-                      <span className="votes">👍 {video.votes}</span>
-                      <span className="views">👁️ {video.views}</span>
-                    </div>
-                  </div>
-
-                  <div className="video-actions">
-                    <button
-                      className="upload-single-btn"
-                      onClick={() => uploadSingleVideo(video)}
-                      disabled={autoUpload}
-                    >
-                      📤 Upload
-                    </button>
-
-                    <button
-                      className="create-story-btn"
-                      onClick={() => createStoryFromVideo(video)}
-                      disabled={autoUpload}
-                    >
-                      📝 Create Story
-                    </button>
-                  </div>
+                <div className="loading-grid">
+                  {Array(8)
+                    .fill(0)
+                    .map((_, i) => (
+                      <div key={i} className="video-card-skeleton">
+                        <div className="skeleton-thumbnail"></div>
+                        <div className="skeleton-title"></div>
+                        <div className="skeleton-description"></div>
+                      </div>
+                    ))}
                 </div>
               );
-            });
-          }
+            }
 
-          return null;
-        })()}
-      </div>
+            if (videos.length === 0) {
+              console.log("⚠️ VideoPopulator: No videos to display");
+              return (
+                <div className="no-videos-message">
+                  <p>
+                    No videos loaded. Click "Load Story Content" to fetch
+                    videos.
+                  </p>
+                </div>
+              );
+            }
 
-      {/* Usage Instructions */}
-      <div className="usage-instructions">
-        <h3>💡 How to Create Stories:</h3>
-        <ol>
-          <li>
-            <strong>Select Genre:</strong> Choose the story genre that fits your
-            narrative vision
-          </li>
-          <li>
-            <strong>Load Content:</strong> Click "Load Story Content" to fetch
-            themed videos
-          </li>
-          <li>
-            <strong>Upload Individual:</strong> Click "Upload" on specific
-            videos to add them to your library
-          </li>
-          <li>
-            <strong>Batch Upload:</strong> Use "Add All to Library" to upload
-            all loaded content
-          </li>
-          <li>
-            <strong>Create Stories:</strong> Click "Create Story" to turn any
-            video into an interactive branching narrative
-          </li>
-        </ol>
+            console.log(
+              "✨ VideoPopulator: Rendering",
+              videos.length,
+              "video cards"
+            );
+            if (Array.isArray(videos)) {
+              return videos.map((video, index) => {
+                console.log(
+                  `🎬 VideoPopulator: Rendering video ${index + 1}:`,
+                  {
+                    id: video.id,
+                    title: video.title,
+                    thumbnail: video.thumbnail,
+                  }
+                );
 
-        <div className="api-info">
-          <p>
-            <strong>Story Genres Available:</strong>
-          </p>
-          <ul>
-            <li>�️ Adventure - Epic journeys and exploration</li>
-            <li>🕵️ Mystery - Suspenseful and intriguing narratives</li>
-            <li>😂 Comedy - Funny and entertaining content</li>
-            <li>⚡ Action - High-energy and thrilling sequences</li>
-            <li>🚀 Sci-Fi - Futuristic and technology themes</li>
-            <li>🧙 Fantasy - Magical and mythical adventures</li>
-          </ul>
+                return (
+                  <div key={video.id || index} className="video-card">
+                    <div
+                      className="video-thumbnail"
+                      onClick={() => openVideoModal(video)}
+                    >
+                      <img
+                        src={
+                          video.thumbnail ||
+                          "https://picsum.photos/400/300?random=1"
+                        }
+                        alt={video.title || "Video thumbnail"}
+                        onError={(e) => {
+                          console.log("Image failed to load:", video.thumbnail);
+                          e.target.src =
+                            "https://picsum.photos/400/300?random=1";
+                        }}
+                      />
+                      <div className="play-overlay">
+                        <button className="play-button">▶</button>
+                      </div>
+                      <div className="video-duration">{video.duration}s</div>
+                      <div className="video-source">
+                        {video.source || "Demo"}
+                      </div>
+                    </div>
+
+                    <div className="video-info">
+                      <h4 className="video-title">
+                        {video.title || "Untitled Video"}
+                      </h4>
+                      <p className="video-description">
+                        {video.description?.length > 100
+                          ? `${video.description.substring(0, 100)}...`
+                          : video.description || "No description available"}
+                      </p>
+
+                      <div className="video-stats">
+                        <span className="votes">👍 {video.votes}</span>
+                        <span className="views">👁️ {video.views}</span>
+                      </div>
+                    </div>
+
+                    <div className="video-actions">
+                      <button
+                        className="upload-single-btn"
+                        onClick={() => uploadSingleVideo(video)}
+                        disabled={autoUpload}
+                      >
+                        📤 Upload
+                      </button>
+
+                      <button
+                        className="create-story-btn"
+                        onClick={() => createStoryFromVideo(video)}
+                        disabled={autoUpload}
+                      >
+                        📝 Create Story
+                      </button>
+                    </div>
+                  </div>
+                );
+              });
+            }
+
+            return null;
+          })()}
         </div>
-      </div>
 
-      {/* Video Modal for Fullscreen Playback */}
-      {selectedVideo && (
-        <div className="video-modal" onClick={closeVideoModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={closeVideoModal}>
-              ×
-            </button>
-            <h3>{selectedVideo.title}</h3>
-            <video
-              controls
-              autoPlay
-              src={selectedVideo.videoFile}
-              className="modal-video"
-            >
-              Your browser does not support the video tag.
-            </video>
-            <p className="video-description">{selectedVideo.description}</p>
+        {/* Usage Instructions */}
+        <div className="usage-instructions">
+          <h3>💡 How to Create Stories:</h3>
+          <ol>
+            <li>
+              <strong>Select Genre:</strong> Choose the story genre that fits
+              your narrative vision
+            </li>
+            <li>
+              <strong>Load Content:</strong> Click "Load Story Content" to fetch
+              themed videos
+            </li>
+            <li>
+              <strong>Upload Individual:</strong> Click "Upload" on specific
+              videos to add them to your library
+            </li>
+            <li>
+              <strong>Batch Upload:</strong> Use "Add All to Library" to upload
+              all loaded content
+            </li>
+            <li>
+              <strong>Create Stories:</strong> Click "Create Story" to turn any
+              video into an interactive branching narrative
+            </li>
+          </ol>
+
+          <div className="api-info">
+            <p>
+              <strong>Story Genres Available:</strong>
+            </p>
+            <ul>
+              <li>�️ Adventure - Epic journeys and exploration</li>
+              <li>🕵️ Mystery - Suspenseful and intriguing narratives</li>
+              <li>😂 Comedy - Funny and entertaining content</li>
+              <li>⚡ Action - High-energy and thrilling sequences</li>
+              <li>🚀 Sci-Fi - Futuristic and technology themes</li>
+              <li>🧙 Fantasy - Magical and mythical adventures</li>
+            </ul>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Video Modal for Fullscreen Playback */}
+        {selectedVideo && (
+          <div className="video-modal" onClick={closeVideoModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="close-btn" onClick={closeVideoModal}>
+                ×
+              </button>
+              <h3>{selectedVideo.title}</h3>
+              <video
+                controls
+                autoPlay
+                src={selectedVideo.videoFile}
+                className="modal-video"
+              >
+                Your browser does not support the video tag.
+              </video>
+              <p className="video-description">{selectedVideo.description}</p>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };

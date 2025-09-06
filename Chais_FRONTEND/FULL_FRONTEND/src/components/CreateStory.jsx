@@ -250,7 +250,7 @@ export default function CreateStory() {
         </form>
 
         {/* Debug info for development */}
-        {process.env.NODE_ENV === "development" && (
+        {/* {process.env.NODE_ENV === "development" && (
           <div className="debug-info">
             <strong>Debug Info:</strong>
             <br />
@@ -260,7 +260,7 @@ export default function CreateStory() {
             <br />
             Loading: {isLoading ? "Yes" : "No"}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
