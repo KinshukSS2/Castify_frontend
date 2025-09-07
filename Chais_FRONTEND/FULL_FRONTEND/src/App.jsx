@@ -29,7 +29,9 @@ import OrderTestPopulator from "./components/OrderTestPopulator";
 function App() {
   return (
     <NavbarProvider>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      >
         <Routes>
           {/* Root/Landing */}
           <Route path="/" element={<MainPage />} />

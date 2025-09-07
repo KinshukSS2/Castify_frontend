@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
 import "./MainPage.css";
 import LightRays from "./bits/LightRays.jsx";
 
@@ -14,6 +15,16 @@ export default function MainPage() {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Contact form state
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
 
   const predefinedResponses = {
     "how to upload":
@@ -74,6 +85,48 @@ export default function MainPage() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  // Contact form handlers
+  const handleContactInputChange = (e) => {
+    const { name, value } = e.target;
+    setContactForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      // EmailJS configuration with your actual credentials
+      const serviceId = "service_ncnao1y";
+      const templateId = "template_7kir0ai";
+      const publicKey = "_p2-a5BBqPi2CCnfR";
+
+      const templateParams = {
+        from_name: contactForm.name,
+        from_email: contactForm.email,
+        subject: contactForm.subject,
+        message: contactForm.message,
+        to_email: "kinshuk380@gmail.com",
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+
+      setSubmitMessage(
+        "Message sent successfully! We'll get back to you soon."
+      );
+      setContactForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Email sending failed:", error);
+      setSubmitMessage("Failed to send message. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -247,7 +300,7 @@ export default function MainPage() {
                 <div className="contact-icon">📱</div>
                 <div className="contact-details">
                   <h4>Call Us</h4>
-                  <p>+1 (555) 123-4567</p>
+                  <p>(+91) 9496753214</p>
                   <p>Mon-Fri, 9AM-6PM PST</p>
                 </div>
               </div>
@@ -256,8 +309,8 @@ export default function MainPage() {
                 <div className="contact-icon">📍</div>
                 <div className="contact-details">
                   <h4>Visit Us</h4>
-                  <p>123 Innovation Street</p>
-                  <p>San Francisco, CA 94105</p>
+                  <p>Incubation Center,IIT</p>
+                  <p>Lucknow,UP,94105</p>
                 </div>
               </div>
 
@@ -279,37 +332,69 @@ export default function MainPage() {
                 <h3>Send us a message</h3>
                 <p>We'll get back to you within 24 hours</p>
               </div>
-              <form className="contact-form-container">
+              {submitMessage && (
+                <div
+                  className={`submit-message ${
+                    submitMessage.includes("successfully") ? "success" : "error"
+                  }`}
+                >
+                  {submitMessage}
+                </div>
+              )}
+              <form
+                className="contact-form-container"
+                onSubmit={handleContactSubmit}
+              >
                 <div className="form-group">
                   <input
                     type="text"
+                    name="name"
+                    value={contactForm.name}
+                    onChange={handleContactInputChange}
                     placeholder="Your Name"
                     className="form-input"
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <input
                     type="email"
+                    name="email"
+                    value={contactForm.email}
+                    onChange={handleContactInputChange}
                     placeholder="Your Email"
                     className="form-input"
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <input
                     type="text"
+                    name="subject"
+                    value={contactForm.subject}
+                    onChange={handleContactInputChange}
                     placeholder="Subject"
                     className="form-input"
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <textarea
+                    name="message"
+                    value={contactForm.message}
+                    onChange={handleContactInputChange}
                     placeholder="Your Message"
                     className="form-textarea"
                     rows="5"
+                    required
                   ></textarea>
                 </div>
-                <button type="submit" className="form-submit-btn">
-                  Send Message
+                <button
+                  type="submit"
+                  className="form-submit-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
                   <span className="btn-arrow">→</span>
                 </button>
               </form>

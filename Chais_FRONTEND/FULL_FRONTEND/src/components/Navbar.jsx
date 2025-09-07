@@ -19,16 +19,29 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       await axios.post(
         "http://localhost:8000/api/v1/users/logout",
         {},
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers,
+        }
       );
+
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      setUser(null);
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
+      // Even if logout fails on server, clear local storage and redirect
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      setUser(null);
+      navigate("/");
     }
   };
 

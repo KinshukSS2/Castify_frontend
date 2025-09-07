@@ -30,24 +30,32 @@ const AllVideos = () => {
 
       console.log("📦 AllVideos: Raw API response:", res);
       console.log("📊 AllVideos: Response data:", res.data);
-      console.log("📹 AllVideos: Videos array:", res.data.videos);
-      console.log("📈 AllVideos: Videos count:", res.data.videos?.length || 0);
 
-      if (res.data.videos && res.data.videos.length > 0) {
+      // Handle both possible response structures
+      const videosData = res.data.videos || res.data.data?.videos || res.data;
+      console.log("📹 AllVideos: Videos array:", videosData);
+      console.log("📈 AllVideos: Videos count:", videosData?.length || 0);
+
+      if (videosData && videosData.length > 0) {
         console.log("🎯 AllVideos: First video sample:", {
-          id: res.data.videos[0]._id,
-          title: res.data.videos[0].title,
-          thumbnail: res.data.videos[0].thumbnail,
-          description: res.data.videos[0].description,
+          id: videosData[0]._id,
+          title: videosData[0].title,
+          thumbnail: videosData[0].thumbnail,
+          videoFile: videosData[0].videoFile,
+          description: videosData[0].description,
         });
       }
 
-      setVideos(res.data.videos || []);
-      setTotalPages(res.data.totalPages || 1);
+      setVideos(videosData || []);
+      setTotalPages(
+        res.data.totalPages ||
+          Math.ceil((res.data.totalVideos || videosData?.length || 0) / 12) ||
+          1
+      );
 
       console.log(
         "✅ AllVideos: State updated with",
-        res.data.videos?.length || 0,
+        videosData?.length || 0,
         "videos"
       );
     } catch (err) {
@@ -56,6 +64,7 @@ const AllVideos = () => {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status,
+        url: err.config?.url,
       });
       setVideos([]);
     }
@@ -138,7 +147,10 @@ const AllVideos = () => {
   };
 
   const handlePlayVideo = (videoId) => {
+    console.log("🎬 Play button clicked for video ID:", videoId);
     const video = videos.find((v) => v._id === videoId);
+    console.log("🎯 Found video for playback:", video);
+    console.log("📹 Video file URL:", video?.videoFile);
     setSelectedVideo(video);
   };
 
@@ -202,11 +214,43 @@ const AllVideos = () => {
                   <div className="overlay">
                     <button
                       className="play-btn"
-                      onClick={() => handlePlayVideo(video._id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log(
+                          "🔘 Play button clicked for:",
+                          video.title,
+                          video._id
+                        );
+                        handlePlayVideo(video._id);
+                      }}
+                      onMouseEnter={() =>
+                        console.log(
+                          "🎯 Hovering over play button for:",
+                          video.title
+                        )
+                      }
                     >
                       ▶ Play
                     </button>
                   </div>
+                  {/* Always visible play button */}
+                  <button
+                    className="play-btn-always"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log(
+                        "🔘 Always-visible play button clicked for:",
+                        video.title,
+                        video._id
+                      );
+                      handlePlayVideo(video._id);
+                    }}
+                    title="Play Video"
+                  >
+                    ▶
+                  </button>
                 </div>
                 <div className="video-content">
                   <h3 className="video-title">
@@ -282,16 +326,35 @@ const AllVideos = () => {
             <button className="close-btn" onClick={closeVideoModal}>
               ×
             </button>
-            <h3>{selectedVideo.title}</h3>
-            <video
-              controls
-              autoPlay
-              src={selectedVideo.videoFile}
-              className="modal-video"
-            >
-              Your browser does not support the video tag.
-            </video>
-            <p className="video-description">{selectedVideo.description}</p>
+            <h3>{selectedVideo.title || "Untitled Video"}</h3>
+            {selectedVideo.videoFile ? (
+              <video
+                controls
+                autoPlay
+                src={selectedVideo.videoFile}
+                className="modal-video"
+                onError={(e) => {
+                  console.error("Video playback error:", e);
+                  console.error("Video URL:", selectedVideo.videoFile);
+                }}
+                onLoadStart={() =>
+                  console.log("Video loading started:", selectedVideo.videoFile)
+                }
+                onCanPlay={() =>
+                  console.log("Video can play:", selectedVideo.title)
+                }
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div className="video-error">
+                <p>❌ Video file not available</p>
+                <p>Debug info: {JSON.stringify(selectedVideo, null, 2)}</p>
+              </div>
+            )}
+            <p className="video-description">
+              {selectedVideo.description || "No description available"}
+            </p>
           </div>
         </div>
       )}
