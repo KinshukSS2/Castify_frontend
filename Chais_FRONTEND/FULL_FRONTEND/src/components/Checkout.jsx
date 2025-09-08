@@ -56,7 +56,7 @@ export default function Checkout() {
 
   const getShippingCost = () => {
     const subtotal = getCartSubtotal();
-    return subtotal >= 50 ? 0 : 9.99; // Free shipping over $50
+    return subtotal >= 4250 ? 0 : 849.15; // Free shipping over ₹4250
   };
 
   const getTaxAmount = () => {
@@ -183,7 +183,7 @@ export default function Checkout() {
                           </span>
                         </div>
                         <div className="item-price">
-                          ${item.price.toFixed(2)}
+                          ₹{item.price.toFixed(2)}
                         </div>
                       </div>
 
@@ -217,7 +217,7 @@ export default function Checkout() {
                       </div>
 
                       <div className="item-total">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₹{(item.price * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -227,19 +227,19 @@ export default function Checkout() {
                   <h3 className="summary-title">Order Summary</h3>
                   <div className="summary-line">
                     <span>Subtotal:</span>
-                    <span>${getCartSubtotal().toFixed(2)}</span>
+                    <span>₹{getCartSubtotal().toFixed(2)}</span>
                   </div>
                   <div className="summary-line">
                     <span>Shipping:</span>
-                    <span>${getShippingCost().toFixed(2)}</span>
+                    <span>₹{getShippingCost().toFixed(2)}</span>
                   </div>
                   <div className="summary-line">
                     <span>Tax:</span>
-                    <span>${getTaxAmount().toFixed(2)}</span>
+                    <span>₹{getTaxAmount().toFixed(2)}</span>
                   </div>
                   <div className="summary-line total">
                     <span>Total:</span>
-                    <span>${getTotalAmount().toFixed(2)}</span>
+                    <span>₹{getTotalAmount().toFixed(2)}</span>
                   </div>
 
                   <button
@@ -476,7 +476,7 @@ export default function Checkout() {
                   <div className="summary-line">
                     <span>Total Amount:</span>
                     <span className="total-amount">
-                      ${getTotalAmount().toFixed(2)}
+                      ₹{getTotalAmount().toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -496,7 +496,7 @@ export default function Checkout() {
                   >
                     {isProcessing
                       ? "Processing..."
-                      : `Pay $${getTotalAmount().toFixed(2)}`}
+                      : `Pay ₹${getTotalAmount().toFixed(2)}`}
                   </button>
                 </div>
               </form>
@@ -520,7 +520,7 @@ export default function Checkout() {
                     Order #CF{Date.now().toString().slice(-6)}
                   </div>
                   <div className="order-total">
-                    Total: ${getTotalAmount().toFixed(2)}
+                    Total: ₹{getTotalAmount().toFixed(2)}
                   </div>
                 </div>
 

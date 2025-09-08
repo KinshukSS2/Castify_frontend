@@ -20,7 +20,7 @@ export default function Merchandise() {
       id: 1,
       name: "Castify Premium T-Shirt",
       category: "clothing",
-      price: 29.99,
+      price: 2549.15,
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEwZYF3oaBtFkKTW5nuN8V_mJjjp0ARmNx_g&s",
       description: "Ultra-soft premium cotton with embroidered Castify logo",
@@ -31,7 +31,7 @@ export default function Merchandise() {
       id: 2,
       name: "Director's Hoodie",
       category: "clothing",
-      price: 49.99,
+      price: 4249.15,
       image:
         "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
       description: "Cozy fleece hoodie perfect for creative sessions",
@@ -42,7 +42,7 @@ export default function Merchandise() {
       id: 3,
       name: "Castify Coffee Mug",
       category: "accessories",
-      price: 14.99,
+      price: 1274.15,
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMqYp0Px2WkFzyoy1hM7Lqbq05KnFW2rimUw&s",
       description: "Premium ceramic mug for your creative fuel",
@@ -53,7 +53,7 @@ export default function Merchandise() {
       id: 4,
       name: "Creator's Cap",
       category: "accessories",
-      price: 24.99,
+      price: 2124.15,
       image:
         "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=400&fit=crop",
       description: "Adjustable cap with embroidered logo",
@@ -64,7 +64,7 @@ export default function Merchandise() {
       id: 5,
       name: "Story Creator Notebook",
       category: "stationery",
-      price: 19.99,
+      price: 1699.15,
       image:
         "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=400&fit=crop",
       description: "Premium notebook for plotting your next masterpiece",
@@ -75,7 +75,7 @@ export default function Merchandise() {
       id: 6,
       name: "Castify Sticker Pack",
       category: "stationery",
-      price: 9.99,
+      price: 849.15,
       image:
         "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
       description: "Collection of 12 premium vinyl stickers",
@@ -86,7 +86,7 @@ export default function Merchandise() {
       id: 7,
       name: "Premium Tote Bag",
       category: "accessories",
-      price: 34.99,
+      price: 2974.15,
       image:
         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
       description: "Durable canvas tote for creators on the go",
@@ -97,7 +97,7 @@ export default function Merchandise() {
       id: 8,
       name: "Creator's Joggers",
       category: "clothing",
-      price: 39.99,
+      price: 3399.15,
       image:
         "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=400&fit=crop",
       description: "Comfortable joggers for relaxed creative sessions",
@@ -276,7 +276,7 @@ export default function Merchandise() {
               >
                 <span className="cart-icon">🛒</span>
                 <span className="cart-count">{getCartItemCount()}</span>
-                <span className="cart-total">${getCartTotal().toFixed(2)}</span>
+                <span className="cart-total">₹{getCartTotal().toFixed(2)}</span>
               </button>
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function Merchandise() {
                   </div>
 
                   <div className="product-footer">
-                    <div className="product-price">${product.price}</div>
+                    <div className="product-price">₹{product.price}</div>
                     <button
                       className="add-to-cart-btn"
                       onClick={() => addToCart(product)}
@@ -404,7 +404,7 @@ export default function Merchandise() {
                             Color: {item.selectedColor}
                           </span>
                         </div>
-                        <div className="item-price">${item.price}</div>
+                        <div className="item-price">₹{item.price}</div>
                       </div>
 
                       <div className="item-controls">
@@ -443,7 +443,7 @@ export default function Merchandise() {
                   <div className="cart-total">
                     <div className="total-label">Total:</div>
                     <div className="total-amount">
-                      ${getCartTotal().toFixed(2)}
+                      ₹{getCartTotal().toFixed(2)}
                     </div>
                   </div>
 
