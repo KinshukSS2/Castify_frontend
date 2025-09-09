@@ -10,6 +10,7 @@ const AllVideos = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [playingVideo, setPlayingVideo] = useState(null); // Track which video is playing
   const [selectedVideo, setSelectedVideo] = useState(null); // For fullscreen modal
+  const [userVotes, setUserVotes] = useState({}); // Track user's vote state for each video
 
   useEffect(() => {
     // Get current user from localStorage
@@ -53,6 +54,17 @@ const AllVideos = () => {
           1
       );
 
+      // Initialize user vote states from server response
+      const voteStates = {};
+      if (videosData) {
+        videosData.forEach((video) => {
+          if (video.userVoteState) {
+            voteStates[video._id] = video.userVoteState;
+          }
+        });
+      }
+      setUserVotes(voteStates);
+
       console.log(
         "✅ AllVideos: State updated with",
         videosData?.length || 0,
@@ -71,6 +83,12 @@ const AllVideos = () => {
   };
 
   const handleVote = async (videoId, voteType) => {
+    // Check if user is logged in
+    if (!currentUser) {
+      alert("Please log in to vote on videos!");
+      return;
+    }
+
     try {
       setVotingStatus((prev) => ({ ...prev, [videoId]: "voting" }));
 
@@ -78,6 +96,8 @@ const AllVideos = () => {
       const response = await axiosInstance.post(`/${videoId}/vote`, {
         voteType: voteType, // 'upvote' or 'downvote'
       });
+
+      console.log("Vote response:", response.data);
 
       // Update the video in the local state
       setVideos((prevVideos) =>
@@ -92,6 +112,12 @@ const AllVideos = () => {
             : video
         )
       );
+
+      // Update user vote state
+      setUserVotes((prev) => ({
+        ...prev,
+        [videoId]: response.data.data.userVoteState,
+      }));
 
       setVotingStatus((prev) => ({ ...prev, [videoId]: "success" }));
 
@@ -264,19 +290,41 @@ const AllVideos = () => {
                   <div className="vote-section">
                     <button
                       className={`vote-btn upvote ${
+                        userVotes[video._id] === "upvoted" ? "active" : ""
+                      } ${
                         votingStatus[video._id] === "voting" ? "voting" : ""
                       }`}
                       onClick={() => handleVote(video._id, "upvote")}
-                      disabled={votingStatus[video._id] === "voting"}
+                      disabled={
+                        votingStatus[video._id] === "voting" || !currentUser
+                      }
+                      title={
+                        !currentUser
+                          ? "Please log in to vote"
+                          : userVotes[video._id] === "upvoted"
+                          ? "Remove upvote"
+                          : "Upvote"
+                      }
                     >
                       👍 {video.upvotes || 0}
                     </button>
                     <button
                       className={`vote-btn downvote ${
+                        userVotes[video._id] === "downvoted" ? "active" : ""
+                      } ${
                         votingStatus[video._id] === "voting" ? "voting" : ""
                       }`}
                       onClick={() => handleVote(video._id, "downvote")}
-                      disabled={votingStatus[video._id] === "voting"}
+                      disabled={
+                        votingStatus[video._id] === "voting" || !currentUser
+                      }
+                      title={
+                        !currentUser
+                          ? "Please log in to vote"
+                          : userVotes[video._id] === "downvoted"
+                          ? "Remove downvote"
+                          : "Downvote"
+                      }
                     >
                       👎 {video.downvotes || 0}
                     </button>
