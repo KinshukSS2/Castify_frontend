@@ -3,6 +3,7 @@ import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import "./MainPage.css";
 import LightRays from "./bits/LightRays.jsx";
+import dialogflowService from "./api/dialogflowService.jsx";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -10,7 +11,8 @@ export default function MainPage() {
   const [messages, setMessages] = useState([
     {
       type: "bot",
-      text: "Hello! I'm your Castify assistant. I can help you with questions about our platform, features, or guide you to the right sections. How can I help you today?",
+      text: "Hello! I'm your enhanced Castify AI assistant! 🤖 I can help you with platform features, video uploads, pricing, community info, and much more. I'm powered by advanced AI to give you better answers. How can I help you today?",
+      source: "system",
     },
   ]);
   const [inputMessage, setInputMessage] = useState("");
@@ -26,43 +28,6 @@ export default function MainPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
 
-  const predefinedResponses = {
-    "how to upload":
-      'To upload videos on Castify, you need to sign up first, then go to the Creator Tools section. Click on "Upload Videos" and follow the simple steps to share your content with our community!',
-    premium:
-      "Our Premium Plans offer exclusive features like advanced analytics, priority support, unlimited uploads, and access to premium editing tools. Check out our Platform section for more details!",
-    contact:
-      'You can reach us through multiple ways: Email us at hello@castify.com or support@castify.com, call us at +1 (555) 123-4567, or visit our office at 123 Innovation Street, San Francisco. You can also use the contact form in the "Get In Touch" section below!',
-    features:
-      "Castify offers Creative Tools for professional editing, Secure Platform with enterprise-level security, Analytics Dashboard for insights, Community features to connect with creators, Monetization options, and Fast & Reliable performance. Scroll down to see all features!",
-    "sign up":
-      'Getting started is easy! Click the "Join Now" button at the top of the page to create your account, or "Sign In" if you already have one. Welcome to the Castify community!',
-    mission:
-      "Our mission is to democratize content creation and provide a platform where every story matters. We empower creators with cutting-edge tools and connect them with audiences who appreciate authentic, diverse content.",
-    help: "I can help you with information about uploading videos, premium features, contact details, platform features, signing up, our mission, and general navigation. What would you like to know more about?",
-    navigate:
-      "You can explore different sections: scroll down for Mission & Vision, Contact Us, and Features. Use the buttons above to Sign In or Join Now. Need something specific? Just ask!",
-    analytics:
-      "Our Analytics Dashboard provides comprehensive insights to track your content performance and audience engagement. It's included in our Creator Tools section. Sign up to access these powerful features!",
-    community:
-      "Join our vibrant community of creators! Connect with like-minded individuals, build meaningful relationships, and collaborate on projects. Sign up to start networking with fellow creators.",
-    security:
-      "We take security seriously with enterprise-level protection for your content and personal information. Your data is safe with our secure platform and advanced encryption.",
-  };
-
-  const generateResponse = (userMessage) => {
-    const message = userMessage.toLowerCase();
-
-    for (const [key, response] of Object.entries(predefinedResponses)) {
-      if (message.includes(key)) {
-        return response;
-      }
-    }
-
-    // Default response
-    return "I can help you with questions about uploading videos, premium features, contact information, platform features, signing up, our mission, and navigation. Could you please be more specific about what you'd like to know?";
-  };
-
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -73,12 +38,45 @@ export default function MainPage() {
     setMessages((prev) => [...prev, { type: "user", text: userMessage }]);
     setIsLoading(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      const botResponse = generateResponse(userMessage);
-      setMessages((prev) => [...prev, { type: "bot", text: botResponse }]);
+    try {
+      // Get user context (you can expand this based on your app state)
+      const userContext = {
+        isLoggedIn: !!localStorage.getItem("token"), // Check if user is logged in
+      };
+
+      // Use Dialogflow service for intelligent responses
+      const result = await dialogflowService.processQuery(
+        userMessage,
+        userContext
+      );
+
+      console.log(`🤖 Chat Response (${result.source}):`, result.response);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: result.response,
+          source: result.source, // Track response source for debugging
+          intent: result.intent,
+          confidence: result.confidence,
+        },
+      ]);
+    } catch (error) {
+      console.error("Chatbot error:", error);
+
+      // Fallback response on error
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: "I'm sorry, I'm having trouble understanding right now. Please try asking about our features, how to upload videos, pricing, or contact information.",
+          source: "error",
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e) => {
